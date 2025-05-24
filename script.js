@@ -640,8 +640,7 @@ class AdvancedCarViewer {
         this.renderer.render(this.scene, this.camera);
     }
 }
-
-// Initialize the 3D car viewer when the page loads
+// initialization here
 window.addEventListener('load', () => {
     new AdvancedCarViewer();
 });
