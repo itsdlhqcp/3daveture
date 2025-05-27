@@ -9,6 +9,42 @@ class AdvancedCarViewer {
         this.isLoading = false;
         this.carParts = [];
         this.mixer = null;
+
+        // Car navigation properties array
+        this.allCars = ['car1', 'car2', 'car3', 'car4', 'car5','car6', 'car7','car8','car9','car10']; // dynamically add car here as you need in this array
+        this.carNames = {
+            'car1': 'Porsche',
+            'car2': 'Ferrari OLD', 
+            'car3': 'GT3',
+            'car4': 'Lamborghini',
+            'car5': 'Mazda',
+            'car6': 'BMW',
+            'car7': 'GTR',
+            'car8': 'Maclaren',
+            'car9': 'BMW M4',
+            'car10': 'Mustang'
+        };
+        this.currentCarIndex = 0;
+        this.visibleCars = 2; // Number of cars to show at once
+        this.startIndex = 0; // Starting index for visible cars
+
+        this.currentEnvironment = 'default';
+        this.environments = {
+            default: '',
+            night: 'night-env',
+            garage: 'garage-env',
+            studio: 'studio-env',
+            track: 'track-env',
+            city: 'city-env'
+        };
+        this.environmentSceneColors = {
+            default: 0x1f2937,
+            night: 0x1e1b4b,
+            garage: 0x1f2937,
+            studio: 0xf1f5f9,
+            track: 0x365314,
+            city: 0x374151
+        };
         
         // Enhanced color palette
         this.colorMap = {
@@ -259,18 +295,41 @@ class AdvancedCarViewer {
     }
 
     setupEventListeners() {
-        // Model selection
-        document.querySelectorAll('.model-btn').forEach(btn => {
+        // Environment selection (combined background + stage)
+        document.querySelectorAll('.env-btn').forEach(btn => {
             btn.addEventListener('click', (e) => {
-                if (this.isLoading) return;
-                
+                document.querySelector('.env-btn.active')?.classList.remove('active');
+                e.target.classList.add('active');
+                this.currentEnvironment = e.target.dataset.env;
+                this.changeEnvironment();
+            });
+        });
+        // Navigation arrows
+        document.getElementById('prev-btn').addEventListener('click', () => {
+            if (this.startIndex > 0) {
+                this.startIndex -= this.visibleCars;
+                this.updateCarSelector();
+            }
+        });
+    
+        document.getElementById('next-btn').addEventListener('click', () => {
+            if (this.startIndex + this.visibleCars < this.allCars.length) {
+                this.startIndex += this.visibleCars;
+                this.updateCarSelector();
+            }
+        });
+    
+        // Model selection (delegated event listener)
+        document.querySelector('.model-selector').addEventListener('click', (e) => {
+            if (e.target.classList.contains('model-btn') && !this.isLoading) {
                 document.querySelector('.model-btn.active')?.classList.remove('active');
                 e.target.classList.add('active');
                 this.currentCar = e.target.dataset.car;
+                this.currentCarIndex = this.allCars.indexOf(this.currentCar);
                 this.loadCarModel();
-            });
+            }
         });
-
+    
         // Color selection
         document.querySelectorAll('.color-swatch').forEach(swatch => {
             swatch.addEventListener('click', (e) => {
@@ -280,6 +339,63 @@ class AdvancedCarViewer {
                 this.changeCarColor();
             });
         });
+    
+        // Initialize car selector
+        this.updateCarSelector();
+    }
+
+    updateCarSelector() {
+        const modelSelector = document.querySelector('.model-selector');
+        const prevBtn = document.getElementById('prev-btn');
+        const nextBtn = document.getElementById('next-btn');
+        
+        // Remove existing model buttons (keep arrows)
+        const existingBtns = modelSelector.querySelectorAll('.model-btn');
+        existingBtns.forEach(btn => btn.remove());
+        
+        // Add visible car buttons
+        for (let i = this.startIndex; i < Math.min(this.startIndex + this.visibleCars, this.allCars.length); i++) {
+            const carId = this.allCars[i];
+            const carName = this.carNames[carId];
+            const button = document.createElement('button');
+            
+            button.className = 'model-btn';
+            button.dataset.car = carId;
+            button.textContent = carName;
+            
+            // Set active state
+            if (carId === this.currentCar) {
+                button.classList.add('active');
+            }
+            
+            // Insert before next button
+            modelSelector.insertBefore(button, nextBtn);
+        }
+        
+        // Update arrow states
+        prevBtn.disabled = this.startIndex === 0;
+        nextBtn.disabled = this.startIndex + this.visibleCars >= this.allCars.length;
+    }
+
+    changeEnvironment() {
+        const container = document.querySelector('.showroom-container');
+        
+        // Remove all environment classes
+        Object.values(this.environments).forEach(envClass => {
+            if (envClass) container.classList.remove(envClass);
+        });
+        
+        // Add new environment class if not default
+        const newEnvClass = this.environments[this.currentEnvironment];
+        if (newEnvClass) {
+            container.classList.add(newEnvClass);
+        }
+        
+        // Update scene background color to match environment
+        if (this.scene) {
+            const sceneColor = this.environmentSceneColors[this.currentEnvironment];
+            this.scene.background = new THREE.Color(sceneColor);
+        }
     }
 
     showLoading(show = true, text = 'Loading 3D model...', progress = '') {

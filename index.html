@@ -11,7 +11,7 @@
 <body>
     <div class="showroom-container">
         <div class="header">
-            <h1 class="title">3D AutoVerse</h1>
+            <h1 class="title">GarageX</h1>
             <p class="subtitle">Where Speed Meets Innovation</p>
         </div>
 
@@ -28,8 +28,10 @@
             <div class="control-group">
                 <span class="control-label">Model:</span>
                 <div class="model-selector">
+                    <button class="nav-arrow" id="prev-btn" disabled>&lt;</button>
                     <button class="model-btn active" data-car="car1">Porsche</button>
-                    <button class="model-btn" data-car="car2">Ferrari</button>
+                    <button class="model-btn" data-car="car2">Ferrari OLD</button>
+                    <button class="nav-arrow" id="next-btn">&gt;</button>
                 </div>
             </div>
 
@@ -41,6 +43,27 @@
                     <div class="color-swatch electric-yellow" data-color="yellow" title="Electric Yellow"></div>
                     <div class="color-swatch midnight-black" data-color="black" title="Midnight Black"></div>
                     <div class="color-swatch sunset-orange" data-color="orange" title="Sunset Orange"></div>
+                </div>
+            </div>
+
+            <div class="control-groupx">
+                <span class="control-label">8th Anniversary Crown Paints:</span>
+                <div class="color-palette">
+                    <div class="color-swatch royal-purple" data-color="purple" title="Royal Purple"></div>
+                    <div class="color-swatch forest-green" data-color="green" title="Forest Green"></div>
+                    <div class="color-swatch pearl-white" data-color="white" title="Pearl White"></div>
+                </div>
+            </div>
+
+            <div class="control-groupx">
+                <span class="control-label">Modes:</span>
+                <div class="environment-selector">
+                    <button class="env-btn active" data-env="default">Default</button>
+                    <button class="env-btn" data-env="night">Night City</button>
+                    <button class="env-btn" data-env="garage">Modern Garage</button>
+                  
+                    <button class="env-btn" data-env="track">Race Track</button>
+                    <button class="env-btn" data-env="city">Urban Street</button>
                 </div>
             </div>
         </div>
